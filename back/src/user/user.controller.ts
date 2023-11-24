@@ -4,12 +4,12 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private userService: UserService) {}
 
-    add(username: string): Promise<User> {
+    add(username: string,password : string): Promise<User> {
         if (!this.checkUsername(username)) {
             throw new Error("username incorrecte");
             
         }
-        return this.userService.add(username);
+        return this.userService.add(username,password);
     }
 
     getById(id: number):Promise<User | null> {
@@ -21,6 +21,9 @@ export class UserController {
     }
     getAll(): Promise<User[]> {
         return this.userService.getAll();
+    }
+    getLogin(username: string,password:string): Promise<Boolean> {
+        return this.userService.getLogin(username,password);
     }
 
     checkUsername(username: string):boolean{

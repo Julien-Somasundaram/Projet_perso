@@ -2,6 +2,8 @@ import { ExpressRouter } from './express-router';
 import { ExpressServer } from './express-server';
 import { UserMYSQLService } from '../user/user.mysql-service';
 import { UserService } from '../user/user.service';
+import { AnimalMYSQLService } from '../animal/animal.mysql-service';
+import { AnimalService } from '../animal/animal.service';
 import * as dotenv from 'dotenv';
 
 export class ExpressApplication {
@@ -9,6 +11,7 @@ export class ExpressApplication {
     private port!: string;
     private server!: ExpressServer;
     private userService!: UserService;
+    private animalService!: AnimalService;
 
     constructor() {
         this.configureApplication();
@@ -38,10 +41,11 @@ export class ExpressApplication {
 
     private configureServices(): void {
         this.userService = new UserMYSQLService();
+        this.animalService = new AnimalMYSQLService();
     }
 
     private configureExpressRouter(): void {
-        this.expressRouter = new ExpressRouter(this.userService);
+        this.expressRouter = new ExpressRouter(this.userService,this.animalService);
     }
 
     private configureServer(): void {

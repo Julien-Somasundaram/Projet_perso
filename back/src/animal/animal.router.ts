@@ -1,18 +1,18 @@
 import { Router } from 'express';
-import { UserController } from './user.controller';
+import { AnimalController } from './animal.controller';
 
 
-export class UserRouter {
+export class AnimalRouter {
     router = Router();
 
-    constructor(private userController: UserController) {
+    constructor(private animalController: AnimalController) {
         this.configureRoutes();
     }
 
     private configureRoutes(): void {
         this.router.get('/:id', async (req, res, next) => {
             try {
-                const result = await this.userController.getById(
+                const result = await this.animalController.getById(
                     parseInt(req.params.id),
                 );
                 res.status(200).json(result);
@@ -21,9 +21,9 @@ export class UserRouter {
             }
         });
 
-        this.router.post('/add-user', async (req, res, next) => {
+        this.router.post('/add-animal', async (req, res, next) => {
             try {
-                const result = await this.userController.add(req.body.username,req.body.password);
+                const result = await this.animalController.add(req.body.nom,req.body.prix,req.body.valeur);
                 res.status(200).json(result);
             } catch (error: unknown) {
                 next(error);
@@ -31,21 +31,13 @@ export class UserRouter {
         });
         this.router.get('/',async  (req, res, next) => {
             try {
-                const result = await this.userController.getAll();
+                const result = await this.animalController.getAll();
                 
                 res.status(200).json(result);
             } catch (error: unknown) {
                 next(error);
             }
         });
-        this.router.post('/login', async (req, res, next) => {
-            try {
-                const result = await this.userController.getLogin(req.body.username,req.body.password);
-                
-                res.status(200).json(result);
-            } catch (error: unknown) {
-                next(error);
-            }
-        });
+
     }
 }

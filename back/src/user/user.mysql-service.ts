@@ -10,11 +10,11 @@ export class UserMYSQLService implements UserService {
         database: process.env.MYSQL_DATABASE,
     });
     
-    add(username: string): Promise<User> {
+    add(username: string,password:string): Promise<User> {
     
         return new Promise((resolve, reject) => {
-            const newUser = new User(0, username);
-            const insertQuery = `INSERT INTO users (username) VALUES ('${username}')`;
+            const newUser = new User(0, username,password);
+            const insertQuery = `INSERT INTO users (username,password) VALUES ('${username}','${password}')`;
             this.connection.query(insertQuery, (error: mysql.MysqlError | null, results: any) => {
                 if (error) {
                     reject(error);
@@ -30,14 +30,14 @@ export class UserMYSQLService implements UserService {
 
     getById(id: number): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            const selectQuery = `SELECT * FROM users WHERE id = ${id}`;
+            const selectQuery = `SELECT * FROM users WHERE id = '${id}'`;
             this.connection.query(selectQuery, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
                     if (results.length > 0) {
                         const userData = results[0];
-                        const user = new User(userData.id, userData.username);
+                        const user = new User(userData.id, userData.username, userData.password);
                         resolve(user);
                     } else {
                         resolve(null);
@@ -55,10 +55,31 @@ export class UserMYSQLService implements UserService {
                     reject(error);
                 } else {
                     const users: User[] = results.map((userData: any) => {
-                        return new User(userData.id, userData.username);
+                        return new User(userData.id, userData.username, userData.password);
                     });
-                    console.log(users);
                     resolve(users);
+                }
+            });
+        });
+    }
+
+    getLogin(username: string,password: string): Promise<Boolean> {
+        return new Promise((resolve, reject) => {
+            const selectQuery = `SELECT * FROM users WHERE username = '${username}'`;
+            this.connection.query(selectQuery, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (results.length > 0) {
+                        const userData = results[0];
+                        if (userData.password == password) {
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    } else {
+                        resolve(false);
+                    }
                 }
             });
         });
