@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { ExpressRouter } from './express-router';
 import bodyParser from 'body-parser';
+import fileUpload from 'express-fileupload';
 
 export class ExpressServer {
     private express = express();
@@ -12,6 +13,7 @@ export class ExpressServer {
         private port: string,
     ) {
         this.express.use(cors());
+        this.express.use(fileUpload());
         this.configureBodyParser();
         this.configureRoutes();
     }

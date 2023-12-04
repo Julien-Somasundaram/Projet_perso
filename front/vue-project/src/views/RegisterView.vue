@@ -9,7 +9,7 @@ const password:Ref<string> = ref('');
 
 async function register(username: string, password: string) {
   try {
-    const response = await US.register(username, password);
+    const response = await US.register(username, password,'user');
   } catch (error) {
     console.error('Erreur lors de la connexion :', error);
   }

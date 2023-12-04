@@ -10,7 +10,7 @@ export class UserRouter {
     }
 
     private configureRoutes(): void {
-        this.router.get('/:id', async (req, res, next) => {
+        this.router.get('/id/:id', async (req, res, next) => {
             try {
                 const result = await this.userController.getById(
                     parseInt(req.params.id),
@@ -23,7 +23,7 @@ export class UserRouter {
 
         this.router.post('/add-user', async (req, res, next) => {
             try {
-                const result = await this.userController.add(req.body.username,req.body.password);
+                const result = await this.userController.add(req.body.username,req.body.password,req.body.role);
                 res.status(200).json(result);
             } catch (error: unknown) {
                 next(error);
@@ -47,5 +47,24 @@ export class UserRouter {
                 next(error);
             }
         });
+        this.router.get('/role', async (req, res, next) => {
+            try {
+                const result = await this.userController.getAllRole();
+                
+                res.status(200).json(result);
+            } catch (error: unknown) {
+                next(error);
+            }
+        });
+        this.router.post('/argent', async (req, res, next) => {
+            try {
+                const result = await this.userController.setArgent(req.body.username,req.body.argent);
+                
+                res.status(200).json(result);
+            } catch (error: unknown) {
+                next(error);
+            }
+        });
+  
     }
 }

@@ -22,6 +22,18 @@ export class AnimalController {
     getAll(): Promise<Animal[]> {
         return this.animalService.getAll();
     }
+    getZoo(username : string): Promise<any> {
+        return this.animalService.getZoo(username);
+    }
+    setQuantite(username : string, nom_animal : string, quantity : number): Promise<any> {
+        return this.animalService.setQuantite(username,nom_animal,quantity);
+    }
+    addToZoo(username : string, nom_animal : string): Promise<any> {
+        return this.animalService.addToZoo(username,nom_animal);
+    }
+    getAnimalImg(nom: string): any {
+        return this.animalService.getAnimalImg(nom);
+    }
 
     checkAnimalname(nom: string):boolean{
         if (nom.length> 15) {
