@@ -23,7 +23,6 @@ onMounted(async () => {
   } catch (error) {
     console.error("Erreur lors de la récupération des utilisateurs :", error);
   }
-
 });
 function updatePopularite() {
   popularite.value = 0;
@@ -33,15 +32,31 @@ function updatePopularite() {
 }
 async function acheter(nom_animal: string) {
   const animal = getAnimalFromZoo(nom_animal);
+
   if (animal) {
     if (argent.value >= animal.prix) {
       argent.value -= animal.prix;
       animal.quantity += 1;
       setQuantity(animal);
+    } else {
+      console.log("pas assez d'argent");
     }
+  }
+  updatePopularite();
+  setArgent();
+}
+async function debloquer(nom_animal: string, animal_prix: number) {
+  const animal = getAnimalFromZoo(nom_animal);
 
+  if (animal) {
+    console.log("animal deja dans le zoo");
   } else {
-    addToZoo(nom_animal);
+    if (argent.value >= animal_prix) {
+      argent.value -= animal_prix;
+      addToZoo(nom_animal);
+    } else {
+      console.log("pas assez d'argent");
+    }
   }
   updatePopularite();
   setArgent();
@@ -49,7 +64,7 @@ async function acheter(nom_animal: string) {
 async function setArgent() {
   await US.setArgent(user.username, argent.value);
   user.argent = argent.value;
-  localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem("user", JSON.stringify(user));
 }
 async function setQuantity(animal: any) {
   await AN.setQuantite(user.username, animal.nom, animal.quantity);
@@ -75,12 +90,10 @@ function print(txt: string) {
   console.log(txt);
 }
 function getImagePath(nom: string) {
-  return "http://localhost:3000/api/animal/image/" + nom;
+  return "http://192.168.1.128:3000/api/animal/image/" + nom;
 }
-
 </script>
 <template>
-  
   <main>
     <Header />
     <div v-if="!user">
@@ -88,82 +101,127 @@ function getImagePath(nom: string) {
       <router-link to="/login">Login</router-link>
     </div>
     <div v-else>
-      <h1>Argent : {{ argent }}</h1>
+      <h1>Argent : {{ argent }}  <img class="price" id="image" src="../assets/money-icone.png" alt="">
+</h1>
       <h1>Popularité : {{ popularite }}</h1>
       <h1>Mes Animaux :</h1>
       <div class="zoo">
-        <div v-for="animal in zoo" :key="animal.id" class="card">
+        <div
+          v-for="animal in zoo"
+          :key="animal.id"
+          class="card"
+          @click="acheter(animal.nom)"
+        >
           <div class="card-body">
             <h2 class="name">{{ animal.nom }}</h2>
-            <img :src="getImagePath(animal.nom)" class="animal-img" alt="">
-            <p class="price">Prix : {{ animal.prix }}</p>
+            <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
             <p class="quantity">Quantité : {{ animal.quantity }}</p>
-            <button @click="acheter(animal.nom)">Acheter</button>
-
+            <p class="price" id="text">Prix : {{ animal.prix }} <img class="price" id="image" src="../assets/money-icone.png" alt=""></p>
+           
+            <!-- <button @click="acheter(animal.nom)">Acheter</button> -->
           </div>
         </div>
       </div>
       <button @click="startJourney()">Démarrer la journée</button>
       <h1>Les animaux disponibles :</h1>
-      <ul>
-        <li v-for="animal in animaux" :key="animal.id">
-          {{ animal.nom }}, {{ animal.prix }}
-          <button @click="acheter(animal.nom)">Acheter</button>
-        </li>
-      </ul>
+      <div
+        v-for="animal in animaux"
+        :key="animal.id"
+        class="card"
+        @click="debloquer(animal.nom, animal.prix)"
+      >
+        <div class="card-body" @click="">
+          Enclos à {{ animal.nom }}
+          
+          <br />
+          <div v-if="getAnimalFromZoo(animal.nom) != null">
+            <img
+              :src="getImagePath(animal.nom)"
+              class="animal-img"
+              id="non_disponible"
+              alt=""
+            />
+            <p class="price" id="non_disponible">Prix : {{ animal.prix }} <img class="price" id="image" src="../assets/money-icone.png" alt=""></p>
+            
+          </div>
+          <div v-else>
+            <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
+            <p class="price" id="disponible">Prix : {{ animal.prix }} <img class="price" id="image" src="../assets/money-icone.png" alt=""></p>
+
+            <!-- <button @click="debloquer(animal.nom,animal.prix)">debloquer</button> -->
+          </div>
+
+
+        </div>
+      </div>
     </div>
   </main>
 </template>
 <style>
- body {
+body {
+  background-image: url("../assets/background.jpg");
+  background-size: cover;
+  margin: 150px;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+/* Styles pour les cartes */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
+  transition: 0.3s;
+  width: 200px;
+  margin: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+  background-color: rgb(28, 39, 28);
+}
+.card:hover {
+  transform: scale(1.05);
+}
+.price {
+  color: rgb(218, 200, 200);
+  font-size: 50px;
+  background-color: rgb(18, 26, 18);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
 
-    background-image: url("../assets/background.jpg");
-    background-size: cover;
-    margin: 150px;
-    padding: 0;
-    font-family: Arial, sans-serif;
-  }
-  /* Styles pour les cartes */
-  .card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
-    transition: 0.3s;
-    width: 200px;
-    margin: 10px;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.2s ease-in-out;
+}
+.price#image {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+}
+.card-body {
+  padding: 10px;
+  text-align: center;
+}
 
-  }
-  .card:hover {
-    transform: scale(1.05);
-  }
+.name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
 
-  .card-body {
-    padding: 10px;
-    text-align: center;
-  }
+.animal-img {
+  width: 150px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+#non_disponible {
+  filter: grayscale(100%);
+}
 
-  .name {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  .animal-img {
-    width: 150px;
-    height: 100px;
-    object-fit: cover;
-    margin-bottom: 10px;
-  }
-
-  .price,
-  .quantity {
-    font-size: 14px;
-  }
-  .zoo {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
+.price,
+.quantity {
+  font-size: 14px;
+}
+.zoo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
 </style>

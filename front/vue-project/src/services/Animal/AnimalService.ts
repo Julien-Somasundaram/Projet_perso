@@ -3,7 +3,7 @@ import axios from 'axios';
 export class AnimalService {
 
 
-    private ApiUrl = 'http://localhost:3000/api/animal/';
+    private ApiUrl = 'http://192.168.1.128:3000/api/animal/';
 
     public getAll() {
 
@@ -27,6 +27,7 @@ export class AnimalService {
         ).then((response) => response.data);
     }
     public getAnimalImg(nom: string) {
+        console.log(this.ApiUrl + "/image/" + nom)
         return axios.get(this.ApiUrl + "/image/" + nom, { responseType: 'arraybuffer' })
           .then((response) => {
             console.log(response.data);

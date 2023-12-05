@@ -27,6 +27,7 @@
   padding: 15px;
   background-color: #333;
   color: white;
+  z-index: 999;
   }
   
   .logo {

@@ -4,7 +4,7 @@ import { User } from '../services/User';
 export class UserService{
 
 
-    private ApiUrl = 'http://localhost:3000/api/user/';
+    private ApiUrl = 'http://192.168.1.128:3000/api/user/';
 
     public getAll() {
         
