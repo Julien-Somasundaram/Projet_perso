@@ -10,12 +10,12 @@ export class AnimalMYSQLService implements AnimalService {
         database: process.env.MYSQL_DATABASE,
     });
     
-    add(nom : string, prix : number, valeur : number): Promise<Animal> {
+    add(nom : string, prix : number, valeur : number,popularite:number): Promise<Animal> {
         // save file
        
     
         return new Promise((resolve, reject) => {
-            const newAnimal = new Animal(0, nom, prix, valeur);
+            const newAnimal = new Animal(0, nom, prix, valeur,popularite);
             const insertQuery = `INSERT INTO animaux (nom,prix,valeur) VALUES ('${nom}','${prix}','${valeur}')`;
             this.connection.query(insertQuery, (error: mysql.MysqlError | null, results: any) => {
                 if (error) {
@@ -39,7 +39,7 @@ export class AnimalMYSQLService implements AnimalService {
                 } else {
                     if (results.length > 0) {
                         const animalData = results[0];
-                        const animal = new Animal(animalData.id, animalData.nom, animalData.prix, animalData.valeur);
+                        const animal = new Animal(animalData.id, animalData.nom, animalData.prix, animalData.valeur,animalData.popularite);
                         resolve(animal);
                     } else {
                         resolve(null);
@@ -59,7 +59,7 @@ export class AnimalMYSQLService implements AnimalService {
                     const animaux: Animal[] = results.map((animalData: any) => {
                         const file_path = "./data/"+ animalData.nom + '.jpg';
                         const buffer = fs.readFileSync(file_path);
-                        return new Animal(animalData.id, animalData.nom, animalData.prix, animalData.valeur);
+                        return new Animal(animalData.id, animalData.nom, animalData.prix, animalData.valeur,animalData.popularite);
                     });
                     resolve(animaux);
                 }
@@ -68,7 +68,7 @@ export class AnimalMYSQLService implements AnimalService {
     }
     getZoo(username: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            const selectAllQuery = `SELECT users.username,animaux.nom,animaux.prix,animaux.valeur,quantite.quantity,animaux.popularite from users left join quantite ON users.id = quantite.id_user left join animaux on quantite.id_animal = animaux.id where users.username = '${username}'`;
+            const selectAllQuery = `SELECT users.username,animaux.nom,animaux.prix,animaux.valeur,quantite.quantity,animaux.popularite from users left join quantite ON users.id = quantite.id_user left join animaux on quantite.id_animal = animaux.id where users.username = '${username}' AND animaux.nom IS NOT NULL`;
             this.connection.query(selectAllQuery, (error, results) => {
                 if (error) {
                     reject(error);

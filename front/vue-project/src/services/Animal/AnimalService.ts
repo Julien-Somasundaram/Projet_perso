@@ -19,7 +19,7 @@ export class AnimalService {
     public addToZoo(username: string, nom_animal: string) {
         return axios.post(this.ApiUrl + "/add-to-zoo/", { username, nom_animal }).then((response) => response.data);
     }
-    public add(nom: string, prix: number, valeur: number, file: File) {
+    public add(nom: string, prix: number, valeur: number,popularite:number, file: File) {
         console.log(file);
         return axios.post(this.ApiUrl + "/add-animal/",
             { nom, prix, valeur, file },

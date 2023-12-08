@@ -8,4 +8,5 @@ export interface UserService {
     getLogin(username: string,password:string): Promise<Boolean | User>;
     getAllRole(): Promise<Role[]>;
     setArgent(username: string, argent: number): Promise<any>;
+    setJour(username: string, jour: number): Promise<any>;
 }

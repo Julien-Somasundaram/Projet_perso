@@ -65,6 +65,15 @@ export class UserRouter {
                 next(error);
             }
         });
+        this.router.post('/jour', async (req, res, next) => {
+            try {
+                const result = await this.userController.setJour(req.body.username,req.body.jour);
+                
+                res.status(200).json(result);
+            } catch (error: unknown) {
+                next(error);
+            }
+        });
   
     }
 }

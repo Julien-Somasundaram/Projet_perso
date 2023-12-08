@@ -34,7 +34,7 @@ export class AnimalRouter {
                     }
                 });
 
-                const result = await this.animalController.add(req.body.nom, req.body.prix, req.body.valeur);
+                const result = await this.animalController.add(req.body.nom, req.body.prix, req.body.valeur, req.body.popularite);
                 res.status(200).json(result);
             } catch (error: unknown) {
                 next(error);

@@ -4,12 +4,12 @@ import { AnimalService } from './animal.service';
 export class AnimalController {
     constructor(private animalService: AnimalService) {}
 
-    add(nom: string, prix : number, valeur : number): Promise<Animal> {
+    add(nom: string, prix : number, valeur : number,popularite : number): Promise<Animal> {
         if (!this.checkAnimalname(nom)) {
             throw new Error("username incorrecte");
             
         }
-        return this.animalService.add(nom,prix,valeur);
+        return this.animalService.add(nom,prix,valeur,popularite);
     }
 
     getById(id: number):Promise<Animal | null> {

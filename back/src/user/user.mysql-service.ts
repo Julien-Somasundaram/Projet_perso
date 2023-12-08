@@ -17,7 +17,7 @@ export class UserMYSQLService implements UserService {
     add(username: string,password:string,role : string): Promise<User> {
         
         return new Promise(async (resolve, reject) => {
-            const newUser = new User(0, username,password,role,0,0);
+            const newUser = new User(0, username,password,role,0,0,1);
             const role_id = await this.getIdRole(role);
             const crypto = require('crypto');
             const salt = crypto.randomBytes(16).toString('hex');
@@ -40,14 +40,14 @@ export class UserMYSQLService implements UserService {
 
     getById(id: number): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            const selectQuery = `SELECT users.id, users.username,users.argent,users.password,role.nom, role.droit FROM users LEFT JOIN role on users.id_role = role.id WHERE users.id ='${id}'`;
+            const selectQuery = `SELECT users.id, users.username,users.argent,users.password,role.nom, role.droit,users.jour FROM users LEFT JOIN role on users.id_role = role.id WHERE users.id ='${id}'`;
             this.connection.query(selectQuery, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
                     if (results.length > 0) {
                         const userData = results[0];
-                        const user = new User(userData.id, userData.username, userData.password,userData.nom,userData.droit,userData.argent);
+                        const user = new User(userData.id, userData.username, userData.password,userData.nom,userData.droit,userData.argent,userData.jour);
                         resolve(user);
                     } else {
                         resolve(null);
@@ -59,13 +59,13 @@ export class UserMYSQLService implements UserService {
 
     getAll(): Promise<User[]> {
         return new Promise((resolve, reject) => {
-            const selectAllQuery = `SELECT users.id, users.username,users.argent,users.password,role.nom, role.droit FROM users LEFT JOIN role on users.id_role = role.id`;
+            const selectAllQuery = `SELECT users.id, users.username,users.argent,users.password,role.nom, role.droit, users.jour FROM users LEFT JOIN role on users.id_role = role.id`;
             this.connection.query(selectAllQuery, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
                     const users: User[] = results.map((userData: any) => {
-                        return new User(userData.id, userData.username, userData.password,userData.nom,userData.droit,userData.argent);
+                        return new User(userData.id, userData.username, userData.password,userData.nom,userData.droit,userData.argent,userData.jour);
                     });
                     resolve(users);
                 }
@@ -75,7 +75,7 @@ export class UserMYSQLService implements UserService {
 
     getLogin(username: string,password: string): Promise<Boolean| User> {
         return new Promise((resolve, reject) => {
-            const selectQuery = `SELECT users.id, users.username,users.argent,users.password,role.nom, role.droit FROM users LEFT JOIN role on users.id_role = role.id WHERE username = '${username}'`;
+            const selectQuery = `SELECT users.id, users.username,users.argent,users.password,role.nom, role.droit , users.jour FROM users LEFT JOIN role on users.id_role = role.id WHERE username = '${username}'`;
             this.connection.query(selectQuery, (error, results) => {
                 if (error) {
                     reject(error);
@@ -88,7 +88,7 @@ export class UserMYSQLService implements UserService {
                         const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
                         password = salt + '$' + hash;
                         if (userData.password == password) {
-                            const user = new User(userData.id, userData.username, userData.password,userData.nom,userData.droit,userData.argent);
+                            const user = new User(userData.id, userData.username, userData.password,userData.nom,userData.droit,userData.argent,userData.jour);
                             resolve(user);
                         } else {
                             resolve(false);
@@ -135,6 +135,19 @@ export class UserMYSQLService implements UserService {
     setArgent(username: string, argent: number): Promise<any> {
         return new Promise((resolve, reject) => {
             const selectQuery = `UPDATE users SET argent = '${argent}' WHERE username = '${username}'`;
+            this.connection.query(selectQuery, (error, results) => {
+                if (error) {
+                    reject(error);
+                } 
+                else {
+                    resolve(results);
+                }
+            })
+            });
+    }
+    setJour(username: string, jour: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const selectQuery = `UPDATE users SET jour = '${jour}' WHERE username = '${username}'`;
             this.connection.query(selectQuery, (error, results) => {
                 if (error) {
                     reject(error);

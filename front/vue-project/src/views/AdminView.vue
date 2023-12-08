@@ -16,6 +16,7 @@ const password: Ref<string> = ref("");
 const model_role: Ref<string> = ref("");
 const nom_animal: Ref<string> = ref("");
 const popularite: Ref<number> = ref(0);
+const valeur: Ref<number> = ref(0);
 const prix : Ref<number> = ref(0);
 let lb_voir_users: Ref<Boolean> = ref(false);
 const file: Ref<File> = ref(new File([""], "filename"));
@@ -34,9 +35,9 @@ async function register(username: string, password: string, role: string) {
     console.error("Erreur lors de la connexion :", error);
   }
 }
-async function addAnimal(nom: string, prix: number, popularite: number, file: File) {
+async function addAnimal(nom: string, prix: number,valeur: number, popularite: number, file: File) {
   try {
-    const response = await AN.add(nom, prix, popularite, file);
+    const response = await AN.add(nom, prix, valeur,popularite, file);
   } catch (error) {
     console.error("Erreur lors de la connexion :", error);
   }
@@ -56,19 +57,26 @@ const user = JSON.parse(localStorage.getItem("user") ?? "null") as string;
     <div v-if="user">
       <div v-if="user.droit  >= 2">
         <h1>Admin</h1>
-        <h1>Créer un utilisateur</h1>
-        <label for="username">Username:</label>
-        <input type="text" v-model="username" />
-        <label for="password">Password:</label>
-        <input type="password" v-model="password" />
-        <select v-model="model_role"  >
-          <option v-for="role in roles" :value="role.nom">
-            {{ role.nom }}
-          </option>
-        </select>
-        <button @click="register(username, password, model_role)">
-          Register
-        </button>
+        <div class="card_admin">
+          
+          <h1>Créer un utilisateur</h1>
+          <label for="username">Username:</label>
+          <input type="text" v-model="username" />
+          <br>
+          <label for="password">Password:</label>
+          <input type="password" v-model="password" />
+          <br>
+          <label for="role">Role:</label>
+          <select v-model="model_role"  >
+            <option v-for="role in roles" :value="role.nom">
+              {{ role.nom }}
+            </option>
+          </select>
+          <br>
+          <button @click="register(username, password, model_role)">
+            Register
+          </button>
+        </div>
         voir les utilisateurs:
         <button @click="voir_users()">voir</button>
         <ul v-if="lb_voir_users">
@@ -80,17 +88,23 @@ const user = JSON.parse(localStorage.getItem("user") ?? "null") as string;
         <v-card class="mx-auto" max-width="300">
           <v-list :items="users"></v-list>
         </v-card>
-        <div>
+        <div class="card_admin">
           <h1>Ajouter un animal</h1>
           <label for="nom">Nom:</label>
           <input type="text" v-model="nom_animal" />
+          <br>
           <label for="prix">Prix:</label>
           <input type="number" v-model="prix" />
+          <br>
+          <label for="valeur">Valeur:</label>
+          <input type="number" v-model="valeur" />
+          <br>
           <label for="popularite">Popularité:</label>
           <input type="number" v-model="popularite" />
+          <br>
           <label for="file">Image:</label>
           <input type="file" v-on:change="file = $event.target.files[0]" />
-          <button @click="addAnimal(nom_animal, prix, popularite, file)">
+          <button @click="addAnimal(nom_animal, prix,valeur, popularite, file)">
             Ajouter
           </button>
 
@@ -108,4 +122,16 @@ const user = JSON.parse(localStorage.getItem("user") ?? "null") as string;
   </main>
 </template>
 
-<style></style>
+<style>
+
+.card_admin {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
+  transition: 0.3s;
+  width: 300px;
+  margin: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+  background-color: rgb(44, 59, 44);
+}
+</style>

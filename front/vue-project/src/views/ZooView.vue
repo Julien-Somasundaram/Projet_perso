@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, defineProps, onMounted } from "vue";
+import { ref, defineProps, onMounted, type Ref } from "vue";
 import { AnimalService } from "../services/Animal/AnimalService";
 import { Animal } from "../services/Animal/Animal";
 import { UserService } from "../services/UserService";
+import { User } from "../services/User";
 import Header from "../components/Header.vue";
 
 const AN = new AnimalService();
@@ -11,7 +12,7 @@ const animaux = ref([Animal]);
 const zoo = ref([]);
 let popularite: Ref<number> = ref(0);
 let argent: Ref<number> = ref(0);
-const user = JSON.parse(localStorage.getItem("user") ?? "null") as string;
+const user = JSON.parse(localStorage.getItem("user") ?? "null") as User;
 
 onMounted(async () => {
   try {
@@ -66,16 +67,24 @@ async function setArgent() {
   user.argent = argent.value;
   localStorage.setItem("user", JSON.stringify(user));
 }
+async function setJour() {
+  await US.setJour(user.username, user.jour);
+}
 async function setQuantity(animal: any) {
   await AN.setQuantite(user.username, animal.nom, animal.quantity);
 }
 async function addToZoo(nom_animal: string) {
   AN.addToZoo(user.username, nom_animal);
+  // refresh zoo
+  zoo.value = await AN.getZoo(user.username);
 }
 function startJourney() {
   for (let i = 0; i < zoo.value.length; i++) {
     argent.value += (zoo.value[i].popularite * zoo.value[i].quantity) / 10;
   }
+  user.jour += 1;
+  setJour();
+  if (user.jour % 7 == 0) impot();
   console.log("upadte argent:", argent.value);
   setArgent();
   // update argent dans la base de donnée
@@ -89,6 +98,10 @@ function getAnimalFromZoo(nom: string) {
 function print(txt: string) {
   console.log(txt);
 }
+function impot() {
+  argent.value -= user.jour * 100;
+  setArgent();
+}
 function getImagePath(nom: string) {
   return "http://192.168.1.128:3000/api/animal/image/" + nom;
 }
@@ -101,9 +114,12 @@ function getImagePath(nom: string) {
       <router-link to="/login">Login</router-link>
     </div>
     <div v-else>
-      <h1>Argent : {{ argent }}  <img class="price" id="image" src="../assets/money-icone.png" alt="">
-</h1>
+      <h1>
+        Argent : {{ argent }}
+        <img class="price" id="image" src="../assets/money-icone.png" alt="" />
+      </h1>
       <h1>Popularité : {{ popularite }}</h1>
+      <h1>Jour : {{ user.jour }}</h1>
       <h1>Mes Animaux :</h1>
       <div class="zoo">
         <div
@@ -116,44 +132,77 @@ function getImagePath(nom: string) {
             <h2 class="name">{{ animal.nom }}</h2>
             <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
             <p class="quantity">Quantité : {{ animal.quantity }}</p>
-            <p class="price" id="text">Prix : {{ animal.prix }} <img class="price" id="image" src="../assets/money-icone.png" alt=""></p>
-           
+            <p class="popularite">Popularité : {{ animal.popularite }}</p>
+            <p class="value">Valeur : {{ animal.valeur }}</p>
+            <p class="price" id="text">
+              Prix : {{ animal.prix }}
+              <img
+                class="price"
+                id="image"
+                src="../assets/money-icone.png"
+                alt=""
+              />
+            </p>
+
             <!-- <button @click="acheter(animal.nom)">Acheter</button> -->
           </div>
         </div>
       </div>
       <button @click="startJourney()">Démarrer la journée</button>
       <h1>Les animaux disponibles :</h1>
-      <div
-        v-for="animal in animaux"
-        :key="animal.id"
-        class="card"
-        @click="debloquer(animal.nom, animal.prix)"
-      >
-        <div class="card-body" @click="">
-          Enclos à {{ animal.nom }}
-          
-          <br />
-          <div v-if="getAnimalFromZoo(animal.nom) != null">
-            <img
-              :src="getImagePath(animal.nom)"
-              class="animal-img"
-              id="non_disponible"
-              alt=""
-            />
-            <p class="price" id="non_disponible">Prix : {{ animal.prix }} <img class="price" id="image" src="../assets/money-icone.png" alt=""></p>
-            
+      <ul class="carousel">
+        <li
+          v-for="animal in animaux"
+          :key="animal.id"
+          class="card"
+          @click="debloquer(animal.nom, animal.prix * 10)"
+        >
+          <div class="card-body" @click="">
+            Enclos à {{ animal.nom }}
+
+            <br />
+            <div v-if="getAnimalFromZoo(animal.nom) != null">
+              <img
+                :src="getImagePath(animal.nom)"
+                class="animal-img"
+                id="non_disponible"
+                alt=""
+              />
+              <p class="popularite">Popularité : {{ animal.popularite }}</p>
+              <p class="value">
+                Valeur : {{ animal.popularite * animal.quantity }}
+              </p>
+              <p class="price" id="non_disponible">
+                Prix : {{ animal.prix * 10 }}
+                <img
+                  class="price"
+                  id="image"
+                  src="../assets/money-icone.png"
+                  alt=""
+                />
+              </p>
+            </div>
+            <div v-else>
+              <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
+              <p class="popularite">Popularité : {{ animal.popularite }}</p>
+              <p class="value">
+                Valeur : {{ animal.valeur }}
+              </p>
+              <p class="price" id="disponible">
+                Prix : {{ animal.prix * 10 }}
+                <img
+                  class="price"
+                  id="image"
+                  src="../assets/money-icone.png"
+                  alt=""
+                />
+              </p>
+
+              <!-- <button @click="debloquer(animal.nom,animal.prix)">debloquer</button> -->
+            </div>
           </div>
-          <div v-else>
-            <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
-            <p class="price" id="disponible">Prix : {{ animal.prix }} <img class="price" id="image" src="../assets/money-icone.png" alt=""></p>
-
-            <!-- <button @click="debloquer(animal.nom,animal.prix)">debloquer</button> -->
-          </div>
-
-
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </main>
 </template>
@@ -166,6 +215,20 @@ body {
   font-family: Arial, sans-serif;
 }
 /* Styles pour les cartes */
+.carousel {
+  width: 50%;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  white-space: nowrap;
+  font-size: 20px;
+}
+.carousel li {
+  scroll-snap-align: center;
+  display: inline-block;
+  border-radius: 3px;
+}
+
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
   transition: 0.3s;
@@ -181,17 +244,31 @@ body {
 }
 .price {
   color: rgb(218, 200, 200);
-  font-size: 50px;
   background-color: rgb(18, 26, 18);
   border-radius: 5px;
   display: flex;
   justify-content: center;
-
 }
 .price#image {
   width: 20px;
   height: 20px;
   object-fit: cover;
+}
+.popularite {
+  color: rgb(218, 200, 200);
+  font-size: 20px;
+  background-color: rgb(18, 26, 18);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+}
+.value {
+  color: rgb(218, 200, 200);
+  font-size: 20px;
+  background-color: rgb(18, 26, 18);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
 }
 .card-body {
   padding: 10px;
@@ -221,7 +298,7 @@ body {
 .zoo {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  /* justify-content: center; */
   gap: 10px;
 }
 </style>

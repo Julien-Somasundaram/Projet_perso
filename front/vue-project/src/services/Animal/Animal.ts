@@ -3,6 +3,7 @@ export class Animal {
      public id: number,
      public nom: string,
      public prix: number,
-     public valeur: number
+     public valeur: number,
+     public popularite: number,
     ){}
  }

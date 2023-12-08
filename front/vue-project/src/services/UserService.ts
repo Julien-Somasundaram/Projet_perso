@@ -25,6 +25,9 @@ export class UserService{
     public setArgent(username:string,argent:number) {
         return axios.post(this.ApiUrl+"/argent", {username,argent}).then((response) => response.data);
     }
+    public setJour(username:string,jour:number) {
+        return axios.post(this.ApiUrl+"/jour", {username,jour}).then((response) => response.data);
+    }
     
 
 }

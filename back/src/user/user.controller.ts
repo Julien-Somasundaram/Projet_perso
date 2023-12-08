@@ -32,6 +32,9 @@ export class UserController {
     setArgent(username: string, argent: number): Promise<any> {
         return this.userService.setArgent(username,argent);
     }
+    setJour(username: string, jour: number): Promise<any> {
+        return this.userService.setJour(username,jour);
+    }
 
     checkUsername(username: string):boolean{
         if (username.length> 15) {
