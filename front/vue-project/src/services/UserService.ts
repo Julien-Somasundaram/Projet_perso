@@ -17,7 +17,11 @@ export class UserService{
         return axios.post(this.ApiUrl+"/login", {username,password}).then((response) => response.data);
     }
     public register(username:string,password:string,role:string) {
-        return axios.post(this.ApiUrl+"/add-user", {username,password,role}).then((response) => response.data);
+        return axios.post(this.ApiUrl+"/add-user", {username,password,role}).then((response) => response.data).catch((error) => {
+            console.log(error.response.data.Error);
+            throw new Error(error.response.data.Error);
+          });
+
     }
     public getAllRole() {
         return axios.get(this.ApiUrl+"/role").then((response) => response.data);

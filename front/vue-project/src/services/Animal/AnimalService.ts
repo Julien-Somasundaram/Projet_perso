@@ -19,26 +19,29 @@ export class AnimalService {
     public addToZoo(username: string, nom_animal: string) {
         return axios.post(this.ApiUrl + "/add-to-zoo/", { username, nom_animal }).then((response) => response.data);
     }
-    public add(nom: string, prix: number, valeur: number,popularite:number, file: File) {
+    public add(nom: string, prix: number, valeur: number, popularite: number, file: File) {
         console.log(file);
         return axios.post(this.ApiUrl + "/add-animal/",
             { nom, prix, valeur, file },
-            { headers: { 'Content-Type': 'multipart/form-data' } } 
-        ).then((response) => response.data);
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        ).then((response) => response.data).catch((error) => {
+            throw new Error(error.response.data.Error);
+        }
+        );
     }
     public getAnimalImg(nom: string) {
         console.log(this.ApiUrl + "/image/" + nom)
         return axios.get(this.ApiUrl + "/image/" + nom, { responseType: 'arraybuffer' })
-          .then((response) => {
-            console.log(response.data);
-            const imageUrl = URL.createObjectURL(new Blob([response.data]));
-            return imageUrl;
-          })
-          .catch((error) => {
-            console.error('Erreur lors de la récupération de l\'image :', error);
-          });
-      }
-      
+            .then((response) => {
+                console.log(response.data);
+                const imageUrl = URL.createObjectURL(new Blob([response.data]));
+                return imageUrl;
+            })
+            .catch((error) => {
+                console.error('Erreur lors de la récupération de l\'image :', error);
+            });
+    }
+
 
 
 }

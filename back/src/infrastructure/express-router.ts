@@ -13,6 +13,7 @@ export class ExpressRouter {
     private userRouter!: UserRouter;
     private animalController!: AnimalController;
     private animalRouter!: AnimalRouter;
+    
 
     constructor(private userService: UserService,private animalService: AnimalService) {
         this.configureControllers();
@@ -33,5 +34,9 @@ export class ExpressRouter {
     private configureRoutes(): void {
         this.router.use('/user', this.userRouter.router);
         this.router.use('/animal', this.animalRouter.router);
+        this.router.use((err:Error, req:any, res:any, next:any) => {
+            console.error(err.stack)
+            res.status(400).send({"Error":err.message})
+          })
     }
 }

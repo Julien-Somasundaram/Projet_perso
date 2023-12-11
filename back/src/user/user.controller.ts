@@ -6,18 +6,13 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     add(username: string,password : string,role : string): Promise<User> {
-        if (!this.checkUsername(username)) {
-            throw new Error("username incorrecte");
-            
-        }
+        this.checkUsername(username); 
+        this.checkPassword(password);
         return this.userService.add(username,password,role);
     }
 
     getById(id: number):Promise<User | null> {
-        if (!this.checkId(id)) {
-            throw new Error("id incorrect");
-               
-        }
+        this.checkId(id);
         return this.userService.getById(id);
     }
     getAll(): Promise<User[]> {
@@ -33,23 +28,37 @@ export class UserController {
         return this.userService.setArgent(username,argent);
     }
     setJour(username: string, jour: number): Promise<any> {
+        this.checkJour(jour);
         return this.userService.setJour(username,jour);
     }
 
-    checkUsername(username: string):boolean{
-        if (username.length> 15) {
-            return false;
+    checkUsername(username: string):void{
+        if (username.length> 5) {
+            throw new Error("username trop long");
         }
         if (username == null) {
-            return false;
-        }
-        return true;
+            throw new Error("username null");
+                }
     }
-    checkId(id: number):boolean{
+    checkId(id: number):void{
         if (id < 0) {
-            return false;
+            throw new Error("id negatif");
         }
-     
-        return true;
+    }
+    checkPassword(password: string):void{
+        if (password.length< 5) {
+            throw new Error("password trop court");
+        }
+        if (password == null) {
+            throw new Error("password null");
+                }
+        if (password.length> 20) {
+            throw new Error("password trop long");
+        }
+    }
+    checkJour(jour: number):void{
+        if (jour < 0) {
+            throw new Error("jour negatif");
+        }
     }
 }

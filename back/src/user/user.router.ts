@@ -26,6 +26,8 @@ export class UserRouter {
                 const result = await this.userController.add(req.body.username,req.body.password,req.body.role);
                 res.status(200).json(result);
             } catch (error: unknown) {
+                console.log("error");
+
                 next(error);
             }
         });

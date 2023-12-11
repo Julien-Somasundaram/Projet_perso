@@ -5,18 +5,16 @@ export class AnimalController {
     constructor(private animalService: AnimalService) {}
 
     add(nom: string, prix : number, valeur : number,popularite : number): Promise<Animal> {
-        if (!this.checkAnimalname(nom)) {
-            throw new Error("username incorrecte");
-            
-        }
+        this.checkAnimalname(nom);
+        this.checkInt(prix);
+        this.checkInt(valeur);
+        this.checkInt(popularite);
+        
         return this.animalService.add(nom,prix,valeur,popularite);
     }
 
     getById(id: number):Promise<Animal | null> {
-        if (!this.checkId(id)) {
-            throw new Error("id incorrect");
-               
-        }
+        this.checkInt(id);
         return this.animalService.getById(id);
     }
     getAll(): Promise<Animal[]> {
@@ -26,6 +24,7 @@ export class AnimalController {
         return this.animalService.getZoo(username);
     }
     setQuantite(username : string, nom_animal : string, quantity : number): Promise<any> {
+        this.checkInt(quantity);
         return this.animalService.setQuantite(username,nom_animal,quantity);
     }
     addToZoo(username : string, nom_animal : string): Promise<any> {
@@ -35,20 +34,19 @@ export class AnimalController {
         return this.animalService.getAnimalImg(nom);
     }
 
-    checkAnimalname(nom: string):boolean{
+    checkAnimalname(nom: string):void{
         if (nom.length> 15) {
-            return false;
+            throw new Error("nom trop long");
         }
         if (nom == null) {
-            return false;
-        }
-        return true;
+            throw new Error("nom null");
+                }
+        
     }
-    checkId(id: number):boolean{
-        if (id < 0) {
-            return false;
+    checkInt(int: number):void{
+        if (int < 0) {
+            throw new Error("Int negatif");
         }
-     
-        return true;
     }
+    
 }

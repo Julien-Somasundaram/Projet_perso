@@ -50,20 +50,20 @@ async function debloquer(nom_animal: string, animal_prix: number) {
   const animal = getAnimalFromZoo(nom_animal);
 
   if (animal) {
-    console.log("animal deja dans le zoo");
+    alert("animal deja dans le zoo");
   } else {
     if (argent.value >= animal_prix) {
       argent.value -= animal_prix;
       addToZoo(nom_animal);
     } else {
-      console.log("pas assez d'argent");
+      alert("pas assez d'argent");
     }
   }
   updatePopularite();
   setArgent();
 }
 async function setArgent() {
-  await US.setArgent(user.username, argent.value);
+  // await US.setArgent(user.username, argent.value);
   user.argent = argent.value;
   localStorage.setItem("user", JSON.stringify(user));
 }
@@ -84,7 +84,7 @@ function startJourney() {
   }
   user.jour += 1;
   setJour();
-  if (user.jour % 7 == 0) impot();
+  if (user.jour % 10 == 0) impot();
   console.log("upadte argent:", argent.value);
   setArgent();
   // update argent dans la base de donnée
@@ -99,12 +99,16 @@ function print(txt: string) {
   console.log(txt);
 }
 function impot() {
-  argent.value -= user.jour * 100;
+  argent.value -= user.jour * 30;
   setArgent();
 }
 function getImagePath(nom: string) {
   return "http://192.168.1.128:3000/api/animal/image/" + nom;
 }
+function getAnimalDispo(animal: Animal) {
+  return getAnimalFromZoo(animal.nom) ? "non_disponible" : "disponible";
+}
+
 </script>
 <template>
   <main>
@@ -157,49 +161,21 @@ function getImagePath(nom: string) {
           class="card"
           @click="debloquer(animal.nom, animal.prix * 10)"
         >
-          <div class="card-body" @click="">
+          <div class="card-body" :id="getAnimalDispo(animal)" >
             Enclos à {{ animal.nom }}
-
             <br />
-            <div v-if="getAnimalFromZoo(animal.nom) != null">
+            <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
+            <p class="popularite">Popularité : {{ animal.popularite }}</p>
+            <p class="value">Valeur : {{ animal.valeur }}</p>
+            <p class="price">
+              Prix : {{ animal.prix * 10 }}
               <img
-                :src="getImagePath(animal.nom)"
-                class="animal-img"
-                id="non_disponible"
+                class="price"
+                id="image"
+                src="../assets/money-icone.png"
                 alt=""
               />
-              <p class="popularite">Popularité : {{ animal.popularite }}</p>
-              <p class="value">
-                Valeur : {{ animal.popularite * animal.quantity }}
-              </p>
-              <p class="price" id="non_disponible">
-                Prix : {{ animal.prix * 10 }}
-                <img
-                  class="price"
-                  id="image"
-                  src="../assets/money-icone.png"
-                  alt=""
-                />
-              </p>
-            </div>
-            <div v-else>
-              <img :src="getImagePath(animal.nom)" class="animal-img" alt="" />
-              <p class="popularite">Popularité : {{ animal.popularite }}</p>
-              <p class="value">
-                Valeur : {{ animal.valeur }}
-              </p>
-              <p class="price" id="disponible">
-                Prix : {{ animal.prix * 10 }}
-                <img
-                  class="price"
-                  id="image"
-                  src="../assets/money-icone.png"
-                  alt=""
-                />
-              </p>
-
-              <!-- <button @click="debloquer(animal.nom,animal.prix)">debloquer</button> -->
-            </div>
+            </p>
           </div>
         </li>
       </ul>
@@ -207,28 +183,45 @@ function getImagePath(nom: string) {
   </main>
 </template>
 <style>
+/* Styles généraux */
+
 body {
   background-image: url("../assets/background.jpg");
   background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
   margin: 150px;
   padding: 0;
   font-family: Arial, sans-serif;
+  overflow-x: hidden;
 }
-/* Styles pour les cartes */
-.carousel {
-  width: 50%;
-  overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  white-space: nowrap;
-  font-size: 20px;
+
+/* Styles pour les écrans jusqu'à 768px de largeur */
+@media screen and (max-width: 768px) {
+  .carousel {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 16px;
+  }
+}
+
+/* Styles pour les écrans plus larges que 768px */
+@media screen and (min-width: 769px) {
+  .carousel {
+    width: 50%;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 20px;
+  }
 }
 .carousel li {
   scroll-snap-align: center;
   display: inline-block;
   border-radius: 3px;
 }
-
+/* Styles pour les cartes */
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6);
   transition: 0.3s;
