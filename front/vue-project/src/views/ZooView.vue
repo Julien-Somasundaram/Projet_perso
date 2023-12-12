@@ -12,7 +12,8 @@ const animaux = ref([Animal]);
 const zoo = ref([]);
 let popularite: Ref<number> = ref(0);
 let argent: Ref<number> = ref(0);
-const user = JSON.parse(localStorage.getItem("user") ?? "null") as User;
+const user = JSON.parse(sessionStorage.getItem("user") ?? "null") as User;
+
 
 onMounted(async () => {
   try {
@@ -65,7 +66,7 @@ async function debloquer(nom_animal: string, animal_prix: number) {
 async function setArgent() {
   // await US.setArgent(user.username, argent.value);
   user.argent = argent.value;
-  localStorage.setItem("user", JSON.stringify(user));
+  sessionStorage.setItem("user", JSON.stringify(user));
 }
 async function setJour() {
   await US.setJour(user.username, user.jour);
@@ -103,7 +104,7 @@ function impot() {
   setArgent();
 }
 function getImagePath(nom: string) {
-  return "http://192.168.1.128:3000/api/animal/image/" + nom;
+  return "http://localhost:3000/api/animal/image/" + nom;
 }
 function getAnimalDispo(animal: Animal) {
   return getAnimalFromZoo(animal.nom) ? "non_disponible" : "disponible";

@@ -3,7 +3,7 @@ import axios from 'axios';
 export class AnimalService {
 
 
-    private ApiUrl = 'http://192.168.1.128:3000/api/animal/';
+    private ApiUrl = 'http://localhost:3000/api/animal/';
 
     public getAll() {
 

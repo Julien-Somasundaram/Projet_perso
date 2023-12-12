@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ZooView from '../views/ZooView.vue'
 import AdminView from '../views/AdminView.vue'
+import TestView from '../views/Test.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/Admin',
       name: 'AdminView',
       component: AdminView
+    },
+    {
+      path: '/Test',
+      name: 'TestView',
+      component: TestView
     },
     {
       path: '/about',

@@ -5,41 +5,42 @@ import { User } from "../services/User";
 import Header from "../components/Header.vue";
 import router from '@/router';
 const US = new UserService();
-const username:Ref<string> = ref('');
-const password:Ref<string> = ref('');
+const username: Ref<string> = ref('');
+const password: Ref<string> = ref('');
 const user = ref(User);
-let LoginResponse:Ref<Boolean> = ref(false);
-const userinfo = JSON.parse(localStorage.getItem("user") ?? "null") as User;
+let LoginResponse: Ref<Boolean> = ref(false);
+const userinfo = JSON.parse(sessionStorage.getItem("user") ?? "null") as User;
 onMounted(async () => {
-    try {
-        if (userinfo) {
-            user.value = userinfo;
-            LoginResponse.value = true;
-        }
-    } catch (error) {
-        console.error('Erreur lors de la récupération des utilisateurs :', error);
+  try {
+    if (userinfo) {
+      user.value = userinfo;
+      LoginResponse.value = true;
     }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des utilisateurs :', error);
+  }
 });
 
 async function login(username: string, password: string) {
   try {
     user.value = await US.login(username, password);
-    if (user.value)
-        localStorage.setItem('user', JSON.stringify(user.value));
-        LoginResponse.value = true;
-        // redirect to home page
-        router.push('/');
+    if (user.value) {
+      sessionStorage.setItem('user', JSON.stringify(user.value));
+      LoginResponse.value = true;
+    }
+    // redirect to home page
+    router.push('/');
   } catch (error) {
     console.error('Erreur lors de la connexion :', error);
   }
 }
 async function logout() {
-    try {
-        localStorage.removeItem('user');
-        LoginResponse.value = false;
-    } catch (error) {
-        console.error('Erreur lors de la déconnexion :', error);
-    }
+  try {
+    sessionStorage.removeItem('user');
+    LoginResponse.value = false;
+  } catch (error) {
+    console.error('Erreur lors de la déconnexion :', error);
+  }
 }
 
 </script>
@@ -58,7 +59,7 @@ async function logout() {
       <input type="text" v-model="username" />
       <label for="password">Password:</label>
       <input type="password" v-model="password" />
-      <button @click="login(username, password)">Login</button>  
+      <button @click="login(username, password)">Login</button>
       <p>Vous n'avez pas de compte ?</p>
       <router-link to="/register">Créer un compte</router-link>
     </div>
@@ -68,5 +69,4 @@ async function logout() {
   </main>
 </template>
 
-<style>
-</style>
+<style></style>
