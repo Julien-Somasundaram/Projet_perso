@@ -2,7 +2,6 @@
 import { ref, defineProps, onMounted, type Ref } from 'vue';
 import { UserService } from "../services/UserService";
 import { User } from "../services/User";
-import Header from "../components/Header.vue";
 
 const US = new UserService();
 const username:Ref<string> = ref('');
@@ -23,7 +22,6 @@ async function register(username: string, password: string) {
 
 <template>
   <main>
-    <Header />
     <h1>Register:</h1>
     <label for="username">Username:</label>
     <input type="text" v-model="username" />

@@ -2,11 +2,13 @@
 import { ref, defineProps, onMounted, type Ref } from 'vue';
 import { UserService } from "../services/UserService";
 import { User } from "../services/User";
-import Header from "../components/Header.vue";
+import Login from '../components/Login.vue'
 import router from '@/router';
+
+
+
 const US = new UserService();
-const username: Ref<string> = ref('');
-const password: Ref<string> = ref('');
+
 const user = ref(User);
 let LoginResponse: Ref<Boolean> = ref(false);
 const userinfo = JSON.parse(sessionStorage.getItem("user") ?? "null") as User;
@@ -15,6 +17,8 @@ onMounted(async () => {
     if (userinfo) {
       user.value = userinfo;
       LoginResponse.value = true;
+      router.push('/');
+
     }
   } catch (error) {
     console.error('Erreur lors de la récupération des utilisateurs :', error);
@@ -22,14 +26,19 @@ onMounted(async () => {
 });
 
 async function login(username: string, password: string) {
+ 
   try {
     user.value = await US.login(username, password);
     if (user.value) {
       sessionStorage.setItem('user', JSON.stringify(user.value));
       LoginResponse.value = true;
+      location.reload();
+
     }
-    // redirect to home page
-    router.push('/');
+    else{
+      alert("erreur de connexion")
+    }
+    
   } catch (error) {
     console.error('Erreur lors de la connexion :', error);
   }
@@ -42,31 +51,28 @@ async function logout() {
     console.error('Erreur lors de la déconnexion :', error);
   }
 }
+async function register(username: string, password: string) {
+  try {
+    console.log("register");
+    const response = await US.register(username, password,'user');
 
+  } catch (error) {
+    alert(error)
+  }
+}
 </script>
 
 <template>
+
   <main>
-    <Header />
-    <h1>Login:</h1>
     <div v-if="LoginResponse">
+    vous estes connecter
       <button @click="logout()">Logout</button>
-
     </div>
-    <div v-else="LoginResponse">
-
-      <label for="username">Username:</label>
-      <input type="text" v-model="username" />
-      <label for="password">Password:</label>
-      <input type="password" v-model="password" />
-      <button @click="login(username, password)">Login</button>
-      <p>Vous n'avez pas de compte ?</p>
-      <router-link to="/register">Créer un compte</router-link>
+    <div v-else>
+    <Login @connexion="login" @inscription="register"
+    /> 
     </div>
-
-
-
   </main>
-</template>
 
-<style></style>
+</template>

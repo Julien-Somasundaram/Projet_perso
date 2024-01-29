@@ -7,9 +7,11 @@ import AnimalCard from "../components/animal_card.vue";
 const count = ref(0)
 const AN = new AnimalService();
 const animaux = ref([Animal]);
-defineProps<{
+const props = defineProps<{
   boutique: boolean;
+  zoo: any[];
 }>();
+
 
 onMounted(async () => {
   try {
@@ -24,15 +26,25 @@ function getImagePath(nom: string) {
 const Quantity = ref(0);
 </script>
 
+
+
 <template>
-  <ul class="carousel">
-    <li v-for="animal in animaux" :key="animal.id" class="card">
-      <AnimalCard :animal="animal" :boutique="boutique" @compteur(Quantity) />
-      <p>
+  <v-sheet
+    class="mx-auto"
+    
 
-        Quantité : {{ Quantity }}
-      </p>
+  >
+    <v-slide-group
+      show-arrows
+    >
+      <v-slide-group-item
+        v-for="animal in props.zoo"
+        :key="animal.id"
+      >
+      
+      <AnimalCard :animal="animal" :boutique="props.boutique" :quantity="animal.quantity" disponible="disponible" @acheter="$emit('acheter', animal)"/>
 
-    </li>
-  </ul>
+      </v-slide-group-item>
+    </v-slide-group>
+  </v-sheet>
 </template>

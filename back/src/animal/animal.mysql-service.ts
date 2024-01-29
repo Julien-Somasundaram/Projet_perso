@@ -57,9 +57,8 @@ export class AnimalMYSQLService implements AnimalService {
                     reject(error);
                 } else {
                     const animaux: Animal[] = results.map((animalData: any) => {
-                        const file_path = "./data/"+ animalData.nom + '.jpg';
-                        const buffer = fs.readFileSync(file_path);
-                        return new Animal(animalData.id, animalData.nom, animalData.prix, animalData.valeur,animalData.popularite);
+             
+                        return new Animal(animalData.id, animalData.nom, animalData.prix * 10, animalData.valeur,animalData.popularite);
                     });
                     resolve(animaux);
                 }
@@ -73,8 +72,12 @@ export class AnimalMYSQLService implements AnimalService {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
-                }
+                    const zoo: any[] = results.map((zooData: any) => {
+                                                     
+                            return {username : zooData.username, nom : zooData.nom, prix : zooData.prix , valeur : zooData.valeur, quantity : zooData.quantity, popularite : zooData.popularite};
+                        }                                                       
+                    ); 
+                    resolve(zoo); }
             });
         });
         

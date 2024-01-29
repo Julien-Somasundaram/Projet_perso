@@ -33,7 +33,7 @@ export class UserController {
     }
 
     checkUsername(username: string):void{
-        if (username.length> 5) {
+        if (username.length> 20) {
             throw new Error("username trop long");
         }
         if (username == null) {
@@ -46,7 +46,7 @@ export class UserController {
         }
     }
     checkPassword(password: string):void{
-        if (password.length< 5) {
+        if (password.length< 3) {
             throw new Error("password trop court");
         }
         if (password == null) {
