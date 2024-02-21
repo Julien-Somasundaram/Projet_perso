@@ -12,8 +12,8 @@ const roles = ref([Role]);
 
 const visible = ref(false); // Add this
 
-const username: Ref<string> = ref("");
-const password: Ref<string> = ref("");
+const model_username: Ref<string> = ref("");
+const model_password: Ref<string> = ref("");
 const model_role: Ref<string> = ref("");
 
 const items: Ref<string[]> = ref([]); // Add this
@@ -28,7 +28,7 @@ onMounted(async () => {
   }
 });
 function create() {
-  console.log("create", username.value, password.value, model_role.value);
+  console.log("create", model_username.value, model_password.value, model_role.value);
 }
 
 const props = defineProps<{
@@ -38,6 +38,11 @@ const props = defineProps<{
 async function register(username: string, password: string, role: string) {
   try {
     const response = await US.register(username, password, role);
+    alert("Utilisateur créé avec succès");
+    // reset fields
+    model_username.value = "";
+    model_password.value = "";
+    model_role.value = "";
   } catch (error) {
     console.error("Erreur lors de la connexion :", error);
   }
@@ -52,10 +57,13 @@ async function register(username: string, password: string, role: string) {
       max-width="448"
       rounded="lg"
     >
+    <div v-if="props.admin" required>
+      Ajouter un utilisateur
+    </div>
       <div class="text-subtitle-1 text-medium-emphasis">Username</div>
 
       <v-text-field
-        v-model="username"
+        v-model="model_username"
         density="compact"
         placeholder="Username"
         prepend-inner-icon="mdi-account-outline"
@@ -69,7 +77,7 @@ async function register(username: string, password: string, role: string) {
       </div>
 
       <v-text-field
-        v-model="password"
+        v-model="model_password"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
         density="compact"
@@ -88,7 +96,7 @@ async function register(username: string, password: string, role: string) {
         color="green"
         size="large"
         variant="tonal"
-        @click="register(username, password, admin ? model_role: 'user')"
+        @click="register(model_username, model_password, admin ? model_role: 'user')"
       >
         Créer un compte
       </v-btn>

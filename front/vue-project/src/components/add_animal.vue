@@ -31,13 +31,14 @@ async function addAnimal(
 
 <template>
   <div>
-
+ 
     <v-card
       class="mx-auto pa-12 pb-8"
       elevation="8"
       max-width="448"
       rounded="lg"
     >
+    Ajouter un animal
       <div class="text-subtitle-1 text-medium-emphasis">Nom :</div>
 
       <v-text-field
@@ -45,6 +46,7 @@ async function addAnimal(
         density="compact"
         placeholder="Nom"
         variant="outlined"
+        required = "true"
       ></v-text-field>
 
       <div

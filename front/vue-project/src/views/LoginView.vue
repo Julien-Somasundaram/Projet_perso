@@ -55,6 +55,8 @@ async function register(username: string, password: string) {
   try {
     console.log("register");
     const response = await US.register(username, password,'user');
+    login(username, password);
+   
 
   } catch (error) {
     alert(error)

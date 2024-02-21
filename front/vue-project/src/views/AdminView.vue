@@ -50,6 +50,7 @@ async function logout() {
       <Register :admin=true />
     </div>
     <div v-if="droit >= 1">
+      
       <add_animal />
     </div>
   </div>

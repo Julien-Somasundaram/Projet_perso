@@ -46,7 +46,7 @@ export class UserController {
         }
     }
     checkPassword(password: string):void{
-        if (password.length< 3) {
+        if (password.length< 6) {
             throw new Error("password trop court");
         }
         if (password == null) {

@@ -65,7 +65,7 @@ async function debloquer(nom_animal: string, animal_prix: number) {
   setArgent();
 }
 async function setArgent() {
-  // await US.setArgent(user.username, argent.value);
+  await US.setArgent(user.username, argent.value);
   user.argent = argent.value;
   sessionStorage.setItem("user", JSON.stringify(user));
 }
